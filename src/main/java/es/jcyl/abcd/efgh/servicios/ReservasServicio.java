@@ -10,31 +10,27 @@ import es.jcyl.abcd.efgh.persistencia.repositorios.ReservasRepositorio;
 
 @Service
 public class ReservasServicio {
-	
-	
+
 	@Autowired
 	private ReservasRepositorio repo;
-	
-	
-	public List<ReservaEntidad> todos() {
-		return (List<ReservaEntidad>) this.repo.findAll();
-	}
-	
-	public ReservaEntidad buscarPorId ( int id ) {
-		return this.repo.findOne( new Integer (id));
-	}
-	
-	public void guardar ( ReservaEntidad r ) {
-		this.repo.save( r );
-	}
-	
-	public void actualizar ( ReservaEntidad s ) {
-		this.repo.save( s );
-	}
-	
-	public void borrar ( ReservaEntidad s) {
-		this.repo.delete( s );
-	}
-	
 
+	public List<ReservaEntidad> todos() {
+		return repo.findAll();
+	}
+
+	public ReservaEntidad buscarPorId(Integer id) {
+		return repo.getOne(id);
+	}
+
+	public void guardar(ReservaEntidad r) {
+		repo.save(r);
+	}
+
+	public void actualizar(ReservaEntidad r) {
+		repo.save(r);
+	}
+
+	public void borrar(ReservaEntidad r) {
+		repo.delete(r);
+	}
 }

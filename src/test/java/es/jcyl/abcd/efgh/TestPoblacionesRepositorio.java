@@ -2,6 +2,9 @@ package es.jcyl.abcd.efgh;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -40,11 +42,12 @@ public class TestPoblacionesRepositorio {
 	@Test
 	public void testBusquedaPorPoblacion () throws Exception {
 		
-		ProvinciaEntidad prov =  repoProv.findOne( 40 );
-		assertNotNull (prov);
+		Optional<ProvinciaEntidad> prov =  repoProv.findById( 40 );
+		assertTrue (prov.isPresent());
 		
-		Page<PoblacionEntidad> pagina = repo.findByProvinciaAndPoblacionStartingWithIgnoreCase(prov, "val", 
-				new PageRequest(0,5, new Sort(new Order (Direction.DESC, "poblacion") )));
+		Sort sort = new Sort(Direction.DESC, "poblacion");
+		PageRequest pageRequest = PageRequest.of(0, 5, sort);
+		Page<PoblacionEntidad> pagina = repo.findByProvinciaAndPoblacionStartingWithIgnoreCase(prov.get(), "val", pageRequest);
 		
 		assertNotNull (pagina);
 		assertEquals ( pagina.getSize() , 5);

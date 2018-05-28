@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'io.spring.dependency-management' version "1.0.5.RELEASE"
 	id 'org.springframework.boot' version '2.0.2.RELEASE'
+	id 'io.spring.dependency-management' version "1.0.5.RELEASE"
 }
 
 repositories {
@@ -12,7 +12,7 @@ repositories {
 }
 
 group = 'es.jcyl.abcd.efgh'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = 1.8
 
 dependencies {

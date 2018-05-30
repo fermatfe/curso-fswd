@@ -17,5 +17,5 @@ public interface PoblacionesRepositorio extends SoloLecturaRepositorio <Poblacio
 	
 	public List<PoblacionEntidad> findTop5ByProvinciaAndPoblacionStartingWithIgnoreCase (ProvinciaEntidad p, String pop);
 	
-	public Page<PoblacionEntidad> findByProvinciaAndPoblacionStartingWithIgnoreCase (ProvinciaEntidad p, String pop, Pageable pagina);
+	public Page<PoblacionEntidad> findByProvinciaAndPoblacionStartingWithIgnoreCase (ProvinciaEntidad provincia, String poblacion, Pageable pagina);
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.jcyl.abcd.efgh.excepciones.EmptyPageException;
 import es.jcyl.abcd.efgh.excepciones.NotFoundException;
 import es.jcyl.abcd.efgh.persistencia.entidades.PoblacionEntidad;
 import es.jcyl.abcd.efgh.persistencia.entidades.ProvinciaEntidad;
@@ -36,6 +37,7 @@ public class ProvinciasController {
 		List<ProvinciaEntidad> lista = provinciasServicio.getListado(prov);
 		if (lista == null || lista.isEmpty())
 			throw new NotFoundException("No hay provincias que comiencen por " + prov);
+		
 		return lista;
 	}
 	
@@ -53,7 +55,7 @@ public class ProvinciasController {
 			throw new NotFoundException("No hay poblaciones que comiencen por " + pobl);
 		
 		if (pagina.getNumberOfElements() == 0)
-			throw new NotFoundException("Página " + page + " inexistente, máximo " + (pagina.getTotalPages()-1));
+			throw new EmptyPageException();
 		
 		return ResponseEntity.ok(pagina.getContent());
 	}

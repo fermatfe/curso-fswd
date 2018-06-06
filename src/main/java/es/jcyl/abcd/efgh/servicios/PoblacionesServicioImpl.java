@@ -10,11 +10,12 @@ import es.jcyl.abcd.efgh.persistencia.entidades.ProvinciaEntidad;
 import es.jcyl.abcd.efgh.persistencia.repositorios.PoblacionesRepositorio;
 
 @Service
-public class PoblacionesServicio {
+public class PoblacionesServicioImpl implements PoblacionesServicio {
 	
 	@Autowired
 	PoblacionesRepositorio repo;
 	
+	@Override
 	public Page<PoblacionEntidad> getPagina(Integer provinciaId, String pobl, Pageable pageable) {
 		
 		// Tenemos el ID de provincia, necesitamos la entidad 

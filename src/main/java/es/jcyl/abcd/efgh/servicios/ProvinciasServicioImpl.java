@@ -9,11 +9,15 @@ import es.jcyl.abcd.efgh.persistencia.entidades.ProvinciaEntidad;
 import es.jcyl.abcd.efgh.persistencia.repositorios.ProvinciasRepositorio;
 
 @Service
-public class ProvinciasServicio {
+public class ProvinciasServicioImpl implements ProvinciasServicio {
 
 	@Autowired
 	ProvinciasRepositorio repo;
 	
+	/* (non-Javadoc)
+	 * @see es.jcyl.abcd.efgh.servicios.IProvinciasServicio#getListado(java.lang.String)
+	 */
+	@Override
 	public List<ProvinciaEntidad> getListado(String prov) {
 		return repo.findByProvinciaStartingWithIgnoreCase(prov);
 	}

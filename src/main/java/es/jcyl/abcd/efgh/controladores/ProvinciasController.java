@@ -9,15 +9,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.jcyl.abcd.efgh.excepciones.NotFoundException;
 import es.jcyl.abcd.efgh.persistencia.entidades.PoblacionEntidad;
 import es.jcyl.abcd.efgh.persistencia.entidades.ProvinciaEntidad;
 import es.jcyl.abcd.efgh.servicios.PoblacionesServicio;
 import es.jcyl.abcd.efgh.servicios.ProvinciasServicio;
 
 @RestController
+@RequestMapping("/v1")
 public class ProvinciasController {
 
 	@Autowired
@@ -30,7 +33,10 @@ public class ProvinciasController {
 	public List<ProvinciaEntidad> getProvincias(
 			@RequestParam(value="searchString", defaultValue="") String prov) {
 
-		return provinciasServicio.getListado(prov);
+		List<ProvinciaEntidad> lista = provinciasServicio.getListado(prov);
+		if (lista == null || lista.isEmpty())
+			throw new NotFoundException("No hay provincias que comiencen por " + prov);
+		return lista;
 	}
 	
 	@GetMapping("/provincias/{id}/poblaciones")
@@ -42,6 +48,13 @@ public class ProvinciasController {
 		
 		Pageable pageable = PageRequest.of(page, size);
 		Page<PoblacionEntidad> pagina = poblacionesServicio.getPagina(provinciaId, pobl, pageable);
+		
+		if (pagina.getTotalElements() == 0)
+			throw new NotFoundException("No hay poblaciones que comiencen por " + pobl);
+		
+		if (pagina.getNumberOfElements() == 0)
+			throw new NotFoundException("Página " + page + " inexistente, máximo " + (pagina.getTotalPages()-1));
+		
 		return ResponseEntity.ok(pagina.getContent());
 	}
 }

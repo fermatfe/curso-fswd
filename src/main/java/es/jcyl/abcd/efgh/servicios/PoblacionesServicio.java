@@ -7,6 +7,6 @@ import es.jcyl.abcd.efgh.persistencia.entidades.PoblacionEntidad;
 
 public interface PoblacionesServicio {
 
-	Page<PoblacionEntidad> getPagina(Integer provinciaId, String pobl, Pageable pageable);
+	public Page<PoblacionEntidad> getPagina(Integer provinciaId, String pobl, Pageable pageable);
 
 }

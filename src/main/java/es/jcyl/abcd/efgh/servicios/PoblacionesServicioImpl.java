@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.jcyl.abcd.efgh.persistencia.entidades.PoblacionEntidad;
 import es.jcyl.abcd.efgh.persistencia.entidades.ProvinciaEntidad;
@@ -16,6 +18,7 @@ public class PoblacionesServicioImpl implements PoblacionesServicio {
 	PoblacionesRepositorio repo;
 	
 	@Override
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly=true)
 	public Page<PoblacionEntidad> getPagina(Integer provinciaId, String pobl, Pageable pageable) {
 		
 		// Tenemos el ID de provincia, necesitamos la entidad 

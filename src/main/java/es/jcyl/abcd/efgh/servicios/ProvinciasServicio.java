@@ -6,6 +6,6 @@ import es.jcyl.abcd.efgh.persistencia.entidades.ProvinciaEntidad;
 
 public interface ProvinciasServicio {
 
-	public List<ProvinciaEntidad> getListado(String prov);
+	List<ProvinciaEntidad> getListado(String prov);
 
 }

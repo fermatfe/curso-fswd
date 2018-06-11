@@ -1,0 +1,165 @@
+swagger: "2.0"
+info:
+  description: Aplicación de prácticas del curso FSWD
+  version: 1.0.0
+  title: Curso FSWD
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: fermatfe@jcyl.es
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+
+host: localhost:8080
+basePath: /v1
+schemes:
+  - http
+
+produces:
+  - application/json
+
+tags:
+  - name: Provincias
+    description: Consulta de provincias
+  - name: Poblaciones
+    description: Consulta de poblaciones
+
+paths:
+  /provincias:
+    get:
+      tags:
+        - Provincias
+      summary: Listar provincias
+      description: >
+        Devuelve un listado de provincias en función
+        de un parámetro de búsqueda opcional.
+      operationId: getProvincias
+      parameters:
+        - in: query
+          name: searchString
+          description: Cadena de búsqueda
+          required: false
+          type: string
+          default: ''
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/provincia'
+        404:
+          description: No encontrado
+          schema:
+            $ref: '#/definitions/error'
+  
+  /provincias/{id}/poblaciones:
+    get:
+      tags:
+        - Poblaciones
+      summary: Busca poblaciones de una provincia
+      description: >
+        Devuelve un listado de poblaciones que comiencen
+        por la cadena de búsqueda, con paginación.
+      operationId: getPoblaciones
+      parameters:
+        - name: id
+          in: path
+          description: Identificador de la provincia
+          required: true
+          type: integer
+          format: int32
+        - in: query
+          name: searchString
+          description: Cadena de búsqueda
+          required: true
+          type: string
+          default: ''
+        - name: page
+          in: query
+          description: Página solicitada
+          type: integer
+          format: int32
+          default: 0
+        - name: size
+          in: query
+          description: Tamaño de página
+          type: integer
+          format: int32
+          default: 5
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/poblacion'
+        404:
+          description: No encontrado
+          schema:
+            $ref: '#/definitions/error'
+        400:
+          description: Petición incorrecta
+          schema:
+            $ref: '#/definitions/error'
+definitions:
+  provincia:
+    type: object
+    properties:
+      provinciaId:
+        type: integer
+        format: int32
+        description: Identificador de la provincia
+      provincia:
+        type: string
+        description: Nombre de la provincia
+    example:
+      provinciaId: 3
+      provincia: León
+  poblacion:
+    type: object
+    properties:
+      poblacionId:
+        type: integer
+        format: int64
+      poblacion:
+        type: string
+      latitud:
+        type: string
+      longitud:
+        type: string
+      provincia:
+        $ref: '#/definitions/provincia'
+    example:
+      poblacionId: 5471
+      poblacion: Ciudad Rodrigo
+      latitud: '40.576153'
+      longitud: '-6.061252'
+      provincia:
+        provinciaId: 4
+        provincia: Salamanca
+  error:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+      status:
+        type: integer
+        format: int32
+      error:
+        type: string
+      message:
+        type: string
+      path:
+        type: string
+    example:
+      timestamp: '2018-06-08T17:04:22.893+0000'
+      status: 404
+      error: Not Found
+      message: No encontrado el recurso
+      path: v1/provincias

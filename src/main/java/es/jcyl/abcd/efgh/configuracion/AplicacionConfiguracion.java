@@ -18,11 +18,8 @@ public class AplicacionConfiguracion {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/v1/**")
-						.allowedOrigins("http://dominio.com")
-						.allowedMethods("GET", "PUT", "POST")
-						.allowedHeaders("content-type", "accept")
-						.exposedHeaders("x-requested-with")
-						.allowCredentials(true)
+						.allowedOrigins("*")
+						.allowedMethods("GET")
 						.maxAge(3600);
 			}
 		};

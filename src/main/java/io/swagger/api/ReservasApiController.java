@@ -42,7 +42,7 @@ public class ReservasApiController implements ReservasApi {
 		if (reserva.getId() != idReserva)
 			throw new NotFoundException("El identificador de la reserva es ambiguo");
 		
-		// TODO Debo pasar los datos del modelo (DTO) a la entidad para persistirla
+		ReservaEntidad r = modelMapper.map(reserva, ReservaEntidad.class);
 		
 		reservasServicio.actualizar(r);
 		return ResponseEntity.ok().build();
@@ -80,7 +80,7 @@ public class ReservasApiController implements ReservasApi {
 		if (!r.isPresent())
 			throw new NotFoundException("No hay reservas con ID=" + idReserva);
 
-		// TODO Debo pasar los datos de la entidad al modelo
+		Reserva reserva = modelMapper.map(r.get(), Reserva.class);
 		
 		return ResponseEntity.ok(reserva);
 	}

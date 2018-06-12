@@ -1,8 +1,10 @@
 swagger: "2.0"
 info:
-  description: Aplicación de prácticas del curso FSWD
-  version: 1.0.0
-  title: Curso FSWD
+  title: Practica 5
+  version: '1.0.0'
+  description: >
+    Definicion de una API sencilla de reserva de salas para fines educativos.
+    Cuenta con 5 tipos principales de objeto: Usuarios, Reservas, Edificios, Salas y Recursos.
   termsOfService: http://swagger.io/terms/
   contact:
     email: fermatfe@jcyl.es
@@ -17,132 +19,687 @@ externalDocs:
 host: localhost:8080
 basePath: /v1
 schemes:
-  - http
-
-produces:
-  - application/json
+- http
 
 tags:
-  - name: Provincias
-    description: Consulta de provincias
-  - name: Poblaciones
-    description: Consulta de poblaciones
+- name: Provincias
+  description: Consulta de provincias y poblaciones
+- name: Reservas
+  description: Gestion de reservas
+- name: Edificios
+  description: Gestion de edificios y salas
 
 paths:
   /provincias:
     get:
       tags:
-        - Provincias
-      summary: Listar provincias
+      - Provincias
+      summary: Consulta provincias
       description: >
-        Devuelve un listado de provincias en función
-        de un parámetro de búsqueda opcional.
+        Devuelve un listado de provincias en funcion de un parametro de busqueda opcional.
       operationId: getProvincias
+      produces:
+      - application/json
       parameters:
-        - in: query
-          name: searchString
-          description: Cadena de búsqueda
-          required: false
-          type: string
-          default: ''
+      - name: searchString
+        in: query
+        description: Pasa una cadena opcional para buscar provincias
+        required: false
+        type: string
+        default: ''
       responses:
         200:
           description: OK
           schema:
             type: array
             items:
-              $ref: '#/definitions/provincia'
+              $ref: '#/definitions/Provincia'
         404:
           description: No encontrado
           schema:
-            $ref: '#/definitions/error'
-  
-  /provincias/{id}/poblaciones:
+            $ref: '#/definitions/Error'
+
+  /provincias/{idProvincia}/poblaciones:
     get:
       tags:
-        - Poblaciones
-      summary: Busca poblaciones de una provincia
+        - Provincias
+      summary: Consultar poblaciones
       description: >
-        Devuelve un listado de poblaciones que comiencen
-        por la cadena de búsqueda, con paginación.
+        Devuelve un listado de poblaciones que comiencen por la cadena de busqueda, con paginacion.
       operationId: getPoblaciones
+      produces:
+      - application/json
       parameters:
-        - name: id
-          in: path
-          description: Identificador de la provincia
-          required: true
-          type: integer
-          format: int32
-        - in: query
-          name: searchString
-          description: Cadena de búsqueda
-          required: true
-          type: string
-          default: ''
-        - name: page
-          in: query
-          description: Página solicitada
-          type: integer
-          format: int32
-          default: 0
-        - name: size
-          in: query
-          description: Tamaño de página
-          type: integer
-          format: int32
-          default: 5
+      - name: idProvincia
+        in: path
+        description: ID de la provincia para recuperar sus poblaciones
+        required: true
+        type: integer
+        format: int32
+      - name: searchString
+        in: query
+        description: Pasa una cadena opcional para buscar poblaciones
+        required: false
+        type: string
+      - name: page
+        in: query
+        description: Numero de pagina solicitada (desde 0)
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+      - name: size
+        in: query
+        description: Numero registros por pagina
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 50
+        default: 5
       responses:
         200:
           description: OK
           schema:
             type: array
             items:
-              $ref: '#/definitions/poblacion'
+              $ref: '#/definitions/Poblacion'
         404:
           description: No encontrado
           schema:
-            $ref: '#/definitions/error'
+            $ref: '#/definitions/Error'
         400:
-          description: Petición incorrecta
+          description: Peticion incorrecta
           schema:
-            $ref: '#/definitions/error'
-definitions:
-  provincia:
-    type: object
-    properties:
-      provinciaId:
+            $ref: '#/definitions/Error'
+  
+  /reservas:
+    post:
+      tags:
+      - Reservas
+      summary: Agregar reserva
+      operationId: agregarReserva
+      description: Agrega una reserva al sistema"
+      consumes:
+      - application/json
+      parameters:
+      - name: reserva
+        in: body
+        description: Datos de la nueva reserva
+        required: true
+        schema:
+          $ref: '#/definitions/Reserva'
+      responses:
+        201:
+          description: Reserva agregada correctamente
+        409:
+          description: Ya existe una reserva para ese dia y sala
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      tags:
+      - Reservas
+      summary: Busca reservas
+      operationId: getReservas
+      description: Busqueda de reservas
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Obtenidos correctamente las reservas buscadas
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Reserva'
+
+  /reservas/{idReserva}:
+    get:
+      tags:
+      - Reservas
+      summary: Busca Reserva por ID
+      description: Devuelve una reserva por ID
+      operationId: getReservaPorId
+      produces:
+      - application/json
+      parameters:
+      - name: idReserva
+        in: path
+        description: ID de la reserva a recuperar
+        required: true
         type: integer
         format: int32
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Reserva'
+        404:
+          description: Reserva no encontrada
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+      - Reservas
+      summary: Actualizar reserva por ID
+      operationId: actualizarReserva
+      consumes:
+      - application/json
+      parameters:
+        - name: idReserva
+          in: path
+          description: ID de la reserva a actualizar
+          required: true
+          type: integer
+          format: int32
+        - name: reserva
+          in: body
+          description: Nuevos Datos de la reserva
+          required: true
+          schema:
+            $ref: '#/definitions/Reserva'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Reserva no encontrada
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      tags:
+      - Reservas
+      summary: Borra una reserva por ID
+      operationId: borrarReservaPorID
+      parameters:
+      - name: idReserva
+        in: path
+        description: "ID de la reserva a borrar"
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: OK
+        400:
+          description: "Peticion incorrecta"
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Reserva no encontrada
+          schema:
+            $ref: '#/definitions/Error'
+
+  /edificios:
+    post:
+      tags:
+      - Edificios
+      summary: Agregar edificio
+      operationId: agregarEdificio
+      description: Agrega un edificio al sistema
+      consumes:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        description: Datos del nuevo edificio
+        required: true
+        schema:
+          $ref: '#/definitions/Edificio'
+      responses:
+        201:
+          description: Edificio creado
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      tags:
+      - Edificios
+      summary: Busca edificios
+      operationId: getEdificios
+      description: Busqueda de edificios
+      produces:
+      - application/json
+      parameters:
+      - name: searchString
+        in: query
+        description: Pasa una cadena opcional para buscar edificios
+        required: false
+        type: string
+      - name: idProvincia
+        in: query
+        description: Busca los edificios de una provincia"
+        required: false
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Edificio'
+        404:
+          description: No hay edificios con esos criterios
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+  /edificios/{idEdificio}:
+    get:
+      tags:
+      - Edificios
+      summary: Busca edificio por ID
+      description: Devuelve un edificio por ID
+      operationId: getEdificioPorId
+      produces:
+      - application/json
+      parameters:
+      - name: idEdificio
+        in: path
+        description: ID del edificio a recuperar
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Edificio obtenido
+          schema:
+            $ref: '#/definitions/Edificio'
+        404:
+          description: Edificio no encontrado
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+      - Edificios
+      summary: Actualizar edificio
+      operationId: actualizarEdificio
+      consumes:
+      - application/json
+      parameters:
+        - name: idEdificio
+          in: path
+          description: ID del edificio a actualizar
+          required: true
+          type: integer
+          format: int32
+        - name: edificio
+          in: body
+          description: Nuevos Datos del edificio
+          required: true
+          schema:
+            $ref: '#/definitions/Edificio'
+      responses:
+        200:
+          description: OK
+        400:
+          description: ID invalido
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Edificio no encontrado
+          schema:
+            $ref: '#/definitions/Error'
+      
+    delete:
+      tags:
+      - Edificios
+      summary: Borra un edificio
+      operationId: borrarEdificio
+      parameters:
+      - name: idEdificio
+        in: path
+        description: ID del edificio a borrar
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Edificio borrado
+        404:
+          description: Edificio no encontrado"
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+  /edificios/{idEdificio}/salas:
+    post:
+      tags:
+      - Edificios
+      summary: Agregar sala
+      operationId: agregarSala
+      description: Agrega una sala al sistema
+      consumes:
+      - application/json
+      parameters:
+      - name: idEdificio
+        in: path
+        description: ID del edificio a recuperar
+        required: true
+        type: integer
+        format: int32
+      - name: body
+        in: body
+        description: Datos de la nueva sala
+        schema:
+          $ref: '#/definitions/Sala'
+      responses:
+        201:
+          description: Sala creada
+        400:
+          description: "Peticion incorrecta"
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      tags:
+      - Edificios
+      summary: Buscar salas
+      operationId: getSalas
+      description: Busqueda de salas
+      produces:
+      - application/json
+      parameters:
+      - name: idEdificio
+        in: path
+        description: ID del edificio a recuperar
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Obtenidas las salas del edificio
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Sala'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+  /edificios/{idEdificio}/salas/{idSala}:  
+    get:
+      tags:
+      - Edificios
+      summary: Busca sala por ID
+      description: Devuelve una sala por ID
+      operationId: getSalaPorId
+      produces:
+      - application/json
+      parameters:
+      - name: idEdificio
+        in: path
+        description: ID del edificio a recuperar
+        required: true
+        type: integer
+        format: int32
+      - name: idSala
+        in: path
+        description: ID de la sala a recuperar
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Obtenida la sala del edificio
+          schema:
+            $ref: '#/definitions/Sala'
+        404:
+          description: Sala no encontrada
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+    put:
+      tags:
+      - Edificios
+      summary: Actualizar sala
+      operationId: actualizarSala
+      description: Actualiza una sala
+      consumes:
+      - application/json
+      parameters:
+        - name: idEdificio
+          in: path
+          description: ID del edificio a recuperar
+          required: true
+          type: integer
+          format: int32
+        - name: idSala
+          in: path
+          description: ID de la sala a actualizar
+          required: true
+          type: integer
+          format: int32
+        - name: sala
+          in: body
+          description: Nuevos Datos de la sala
+          required: true
+          schema:
+            $ref: '#/definitions/Sala'
+      responses:
+        200:
+          description: OK
+        400:
+          description: "Peticion incorrecta"
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: "Sala no encontrada"
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      tags:
+      - Edificios
+      summary: Borra una sala
+      operationId: borrarSala
+      parameters:
+      - name: idEdificio
+        in: path
+        description: ID del edificio a recuperar
+        required: true
+        type: integer
+        format: int32
+      - name: idSala
+        in: path
+        description: ID de la sala a borrar
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Sala borrada
+        404:
+          description: Sala no encontrada
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: Peticion incorrecta
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+
+  Provincia:
+    type: object
+    required:
+    - id
+    - provincia
+    properties:
+      id:
+        type: integer
         description: Identificador de la provincia
+        example: 40
       provincia:
         type: string
         description: Nombre de la provincia
-    example:
-      provinciaId: 3
-      provincia: León
-  poblacion:
+        example: Valladolid
+  
+  Poblacion:
     type: object
+    required:
+    - id
+    - poblacion
     properties:
-      poblacionId:
+      id:
         type: integer
-        format: int64
+        description: Identificador de la población
+        example: 7467
       poblacion:
         type: string
+        description: Nombre de la Población
+        example: Valladolid"
       latitud:
         type: string
+        description: Latitud de la población (geoposicionamiento)
+        example: "41.653363"
       longitud:
         type: string
+        description: Longitud de la población (geoposicionamiento)"
+        example: "-4.728874"
       provincia:
-        $ref: '#/definitions/provincia'
-    example:
-      poblacionId: 5471
-      poblacion: Ciudad Rodrigo
-      latitud: '40.576153'
-      longitud: '-6.061252'
-      provincia:
-        provinciaId: 4
-        provincia: Salamanca
-  error:
+        $ref: '#/definitions/Provincia'
+  
+  Sala:
+    type: object
+    required:
+    - nombre
+    properties:
+      id:
+        type: integer
+        description: Identificador de la Sala
+        example: 1
+      nombre:
+        type: string
+        description: Nombre de la sala
+        example: Sala XXX
+      descripcion:
+        type: string
+        example: Sala de reuniones nº1
+      capacidad:
+        type: integer
+        example: 10
+      localizacion:
+        type: string
+        description: Localización de la sala
+        example: "SM-24"
+      tipoSala:
+        $ref: '#/definitions/TipoSala'
+      edificio:
+         $ref: '#/definitions/Edificio'
+
+  TipoSala:
+    type: object
+    required:
+    - id
+    - tipo
+    properties:
+      id:
+        type: integer
+        description: "Id de Tipo de Sala"
+        example: 1
+      tipo:
+        type: string
+        description: "Nombre de Tipo de Sala"
+        example: "Sala de reunion"
+        
+  Reserva:
+    type: object
+    required:
+    - sala
+    - fechaReserva
+    - usuario
+    properties:
+      id:
+        type: integer
+        description: "Id de la Reserva"
+        example: 1
+      sala:  
+        $ref: '#/definitions/Sala'
+      fechaReserva:
+        type: string
+        format: "date"
+        description: "Fecha de la Reserva"
+        example: 2018-04-18
+      usuario:
+        type: string
+        description: "Usuario que realiza la reserva"
+        example: "marmarma"
+
+  Edificio:
+    type: object
+    required:
+    - nombre    
+    properties:
+      id:
+        type: integer
+        description: Identificador del edificio
+        example: 1
+      nombre:
+        type: string
+        description: Nombre del Edificio
+        example: E.U.M. I
+      direccion:
+        $ref: '#/definitions/Direccion'
+      titularidad:
+        type: string
+        description: Titularidad del edificio
+        example: 'PR'
+  
+  Direccion:
+    type: object
+    required:
+    - nombreVia
+    - numeroVia
+    - codigoPostal
+    properties:
+      tipoVia:
+        type: string
+        description: Codigo de via
+        example: Calle
+      nombreVia:
+        type: string
+        description: Nombre de via
+        example: Duque de la Victoria
+      numeroVia:
+        type: string
+        description: Numero de via
+        example: "20"
+      codigoPostal:
+        type: string
+        description: Codigo postal del Edificio
+        example: "47002"
+      poblacion:
+        $ref: '#/definitions/Poblacion'
+  
+  Error:
     type: object
     properties:
       timestamp:
